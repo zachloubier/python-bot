@@ -1,11 +1,15 @@
+import os
+import sys
+import json
 from flask import Flask, request
 app = Flask(__name__)
 
 
-# page_token = 'EAAF3iaUxWAIBAMJ06XDwFZA0gZCQkTZC0cqudDzEUZBxLcezyfPC2F0Mz1SEaLSjb0guZCrtoExae0pQj7BqdoMqS060RkcdyG3VVgJ80Tjnl84xtER7WIKXLjie4udr7WpSyIG6uYh43t8sd8E678PQnHZC3evn1OpzKPlgvZCAQZDZD'
-# app_id = '412908042409986'
-
-
 @app.route('/', methods=['GET'])
 def receive_message():
+	if request.args.get('hub_mode') == 'subscribe' and request.args.get('hub.challenge'):
+		if not request.args.get('hub.verify_token') == os.environ['VERIFY_TOKEN']:
+			return 'Verification token mismatch', 403
+		return request.args.get('hub.challenge'), 200
+
 	return 'Got your message!', 200
